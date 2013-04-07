@@ -6,19 +6,21 @@ use PHPSpec2\ObjectBehavior;
 
 class BaseApp extends ObjectBehavior
 {
-    private $exampleAppDir;
+    private $coreDir;
 
     /**
      * @param Core\ContainerInterface $container
-     * @param Core\RequestHandler $handler
+     * @param Core\RequestMapper $mapper
      */
-    function let($container, $handler)
+    function let($container, $mapper)
     {
-        $container->get('request_handler')->willReturn($handler);
+        $this->coreDir = realpath(__DIR__ . '/../../src/Core');
 
-        $this->exampleAppDir = realpath(__DIR__ . '/../../src/Core');
+        $container->get('request_mapper')->willReturn($mapper);
 
-        $this->beConstructedWith($container);
+        // lazy setting of routes - this is actually invalid
+        // but we will never validate here so it doesnt matter
+        $this->beConstructedWith($container, array('test'));
     }
 
     function it_should_be_initializable()
@@ -43,40 +45,55 @@ class BaseApp extends ObjectBehavior
         $this->shouldNotBeBooted();
     }
 
-    function it_should_get_the_request_handler($handler)
+    function it_should_get_the_request_mapper($mapper)
     {
-        $this->getRequestHandler()->shouldReturnAnInstanceOf($handler);
+        $this->getRequestMapper()->shouldReturnAnInstanceOf($mapper);
     }
 
     /**
      * @param Symfony\Component\HttpFoundation\Request $request
+     * @param Symfony\Component\HttpFoundation\Response $response
      */
-    function it_should_proxy_a_request_to_the_handler_and_boot($handler, $request)
+    function it_should_proxy_a_request_to_the_mapper_and_boot($mapper, $request, $response)
     {
-        $handler->handle($request)->shouldBeCalled();
+        $mapper->handle($request)
+            ->shouldBeCalled()
+            ->willReturn($response);
 
-        $this->handleRequest($request);
+        $this->handleRequest($request)->shouldReturn($response);
 
         $this->shouldBeBooted();
     }
 
     function it_should_initialize_the_container($container)
     {
+        $requiredParams = array('root_dir');
+        $requiredServices = array('app', 'request_mapper', 'router');
+
         // it should register the root dir
         $container
-            ->setParam('root_dir', $this->exampleAppDir)
+            ->setParam('root_dir', $this->coreDir)
             ->shouldBeCalled();
 
-        $container
-            ->set('app', ANY_ARGUMENT)
-            ->shouldBeCalled();
+        foreach ($requiredServices as $serviceId) {
+            $container->set($serviceId, ANY_ARGUMENT)->shouldBeCalled();
+        }
 
         $this->boot();
     }
 
+    function it_should_allow_setting_of_routes()
+    {
+        $this->setRoutes(array('test' => array(
+            'path' => '/',
+            'controller' => 'test_controller',
+            'action' => 'index'
+        )));
+    }
+
     function it_should_get_the_root_directory_for_the_application()
     {
-        $this->getRootDir()->shouldReturn($this->exampleAppDir);
+        $this->getRootDir()->shouldReturn($this->coreDir);
     }
 
     function it_should_return_the_container()

@@ -49,24 +49,4 @@ class Router implements RouterInterface
     {
         return $this->routes;
     }
-
-    // public function offsetExists()
-    // {
-
-    // }
-
-    // public function offsetGet()
-    // {
-
-    // }
-
-    // public function offsetSet($id, $value)
-    // {
-
-    // }
-
-    // public function offsetUnset($id)
-    // {
-
-    // }
 }

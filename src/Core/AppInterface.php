@@ -35,13 +35,6 @@ interface AppInterface
     public function getContainer();
 
     /**
-     * Register services for an application
-     *
-     * @return void
-     */
-    public function registerServices();
-
-    /**
      * Get the application root directory
      *
      * @return string The application root directory
@@ -56,5 +49,12 @@ interface AppInterface
      * @return void
      */
     public function handleRequest(Request $request);
+
+    /**
+     * Set routes for the application to handle
+     *
+     * @param array $routes Array of application routes
+     */
+    public function setRoutes(array $routes);
 }
 

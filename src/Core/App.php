@@ -8,20 +8,27 @@ abstract class App implements AppInterface
 {
     protected $container;
     protected $rootDir;
-    protected $booted = false;
+    protected $booted;
+    protected $routes;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, $routes = array())
     {
         $this->container = $container;
 
+        $this->booted = false;
         $this->rootDir = $this->getRootDir();
+        $this->routes = $routes;
     }
 
     public function boot()
     {
-        $this->initializeContainer();
+        if (!is_array($this->routes) || empty($this->routes)) {
+            throw new \InvalidArgumentException('You haven\'t defined any routes for your application!');
+        }
 
         $this->booted = true;
+
+        $this->initializeContainer();
     }
 
     public function shutdown()
@@ -40,7 +47,7 @@ abstract class App implements AppInterface
             $this->boot();
         }
 
-        $this->getRequestHandler()->handle($request);
+        return $this->getRequestMapper()->handle($request);
     }
 
     public function getRootDir()
@@ -58,20 +65,34 @@ abstract class App implements AppInterface
         return $this->container;
     }
 
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
+    }
+
+    public function getRequestMapper()
+    {
+        return $this->container->get('request_mapper');
+    }
+
     private function initializeContainer()
     {
+        $app = $this;
+
         $this->container->setParam('root_dir', $this->getRootDir());
 
         // unnecessary in php 5.4 because "$this" is accessible within
         // closures
-        $app = &$this;
         $this->container->set('app', function () use ($app) {
             return $app;
         });
-    }
 
-    public function getRequestHandler()
-    {
-        return $this->container->get('request_handler');
+        $this->container->set('request_mapper', function ($c) {
+            return new RequestMapper($c, $c['router']);
+        });
+
+        $this->container->set('router', function ($c) use ($app) {
+            return new Router($app->routes);
+        });
     }
 }

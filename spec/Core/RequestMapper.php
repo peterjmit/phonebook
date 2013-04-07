@@ -8,7 +8,7 @@ class RequestMapper extends ObjectBehavior
 {
     /**
      * @param Core\Container $container
-     * @param Core\Router $router
+     * @param Core\RouterInterface $router
      * @param Symfony\Component\HttpFoundation\Request $request
      * @param Symfony\Component\HttpFoundation\Response $response
      */

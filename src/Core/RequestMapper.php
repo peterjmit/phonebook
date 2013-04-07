@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RequestMapper
 {
-    public function __construct($container, $router)
+    public function __construct($container, RouterInterface $router)
     {
         $this->container = $container;
         $this->router = $router;
