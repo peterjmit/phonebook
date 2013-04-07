@@ -8,9 +8,9 @@ interface ContainerInterface
      * Sets a service
      *
      * @param string $id
-     * @param object $service
+     * @param Closure $service A callable closure that will return an object
      */
-    public function set($id, $service);
+    public function set($id, \Closure $callable);
 
     /**
      * Gets an service from the container
@@ -46,4 +46,13 @@ interface ContainerInterface
      * @return mixed
      */
     public function getParam($id);
+
+    /**
+     * Check if container has a parameter
+     *
+     * @param  string  $id
+     *
+     * @return boolean
+     */
+    public function hasParam($id);
 }
