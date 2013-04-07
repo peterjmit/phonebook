@@ -1,7 +1,8 @@
 {
     "name": "pete/phonebook",
     "require": {
-        "symfony/http-foundation": "2.2.*"
+        "symfony/http-foundation": "2.2.*",
+        "pimple/pimple": "1.0.*@dev"
     },
     "require-dev": {
         "phpspec/phpspec2": "*"
