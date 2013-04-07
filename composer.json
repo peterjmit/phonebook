@@ -1,0 +1,21 @@
+{
+    "name": "pete/phonebook",
+    "require": {
+        "symfony/http-foundation": "2.2.*"
+    },
+    "require-dev": {
+        "phpspec/phpspec2": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Peter Mitchell",
+            "email": "peterjmit@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-0": { "": "src/" }
+    }
+}
