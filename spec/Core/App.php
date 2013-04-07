@@ -41,7 +41,6 @@ class ExampleApp extends ObjectBehavior
         $this->shutdown();
 
         $this->shouldNotBeBooted();
-        $this->getContainer()->shouldBe(null);
     }
 
     function it_should_get_the_request_handler($handler)
@@ -52,7 +51,7 @@ class ExampleApp extends ObjectBehavior
     /**
      * @param Symfony\Component\HttpFoundation\Request $request
      */
-    function it_should_handle_a_request($handler, $request)
+    function it_should_proxy_a_request_to_the_handler_and_boot($handler, $request)
     {
         $handler->handle($request)->shouldBeCalled();
 

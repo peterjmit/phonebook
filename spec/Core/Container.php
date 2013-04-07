@@ -29,7 +29,6 @@ class Container extends ObjectBehavior
         $this->setParam('test_param', 'foo');
 
         $this->getParam('test_param')->shouldReturn('foo');
-
         $this->hasParam('test_param')->shouldReturn(true);
     }
 }

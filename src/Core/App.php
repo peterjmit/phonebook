@@ -27,8 +27,6 @@ abstract class App implements AppInterface
     public function shutdown()
     {
         $this->booted = false;
-
-        $this->container = null;
     }
 
     public function isBooted()
@@ -71,7 +69,6 @@ abstract class App implements AppInterface
             return $app;
         });
     }
-
 
     public function getRequestHandler()
     {
