@@ -2,7 +2,9 @@
 
 namespace Core;
 
-interface RouterInterface
+use Symfony\Component\HttpFoundation\Request;
+
+interface RouterInterface extends CollectionInterface
 {
     /**
      * Match a request object to an action
@@ -13,5 +15,5 @@ interface RouterInterface
      *                  'action' => 'index'
      *              )
      */
-    public function match();
+    public function match(Request $request);
 }
