@@ -4,7 +4,7 @@ namespace spec\Core;
 
 use PHPSpec2\ObjectBehavior;
 
-class ExampleApp extends ObjectBehavior
+class BaseApp extends ObjectBehavior
 {
     private $exampleAppDir;
 
@@ -60,7 +60,7 @@ class ExampleApp extends ObjectBehavior
         $this->shouldBeBooted();
     }
 
-    function it_should_initialise_the_container($container)
+    function it_should_initialize_the_container($container)
     {
         // it should register the root dir
         $container
