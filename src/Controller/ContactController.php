@@ -63,12 +63,27 @@ class ContactController extends ContainerAware implements RestInterface
     {
         $request = $this->getRequest();
         $contactManager = $this->getContactManager();
+        $response = new JsonResponse();
 
         $id = $request->attributes->get('id', null);
 
         $contact = $contactManager->find($id);
 
-        return new JsonResponse($contact);
+        if (!$contact) {
+            $response->setStatusCode(500);
+        }
+
+        try {
+            $contactManager->delete($id);
+        } catch (\Exception $e) {
+            $response->setStatusCode(500);
+            $response->setData(array(
+                'success' => false,
+                'error' => $e->getMessage()
+            ));
+        }
+
+        return $response;
     }
 
     private function getContactValidator()

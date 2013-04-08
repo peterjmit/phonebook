@@ -105,7 +105,7 @@ class ContactManager
 
         $stmt = $handle->prepare('DELETE FROM contact WHERE id = :id');
 
-        $this->execute($stmt, array($id));
+        $this->execute($stmt, array('id' => $id));
     }
 
     private function createNumber($data)

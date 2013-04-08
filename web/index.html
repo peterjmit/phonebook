@@ -25,6 +25,7 @@
 
   <div class="row">
     <div id="contact-app" class="small-9 small-centered columns">
+      <div id="error-list"></div>
       <form id="contact-add" action="/">
         <div class="row">
           <div class="large-4 columns">
@@ -63,7 +64,15 @@
         </div>
         <div class="large-4 columns">
           <%= numbers[0].number %>
+          <button class="delete alert tiny right">Delete</button>
         </div>
+  </script>
+
+  <script type="text/template" id="contact-error">
+    <div data-alert class="alert-box <%= type %>">
+      <%= message %>
+      <a href="#" class="close">&times;</a>
+    </div>
   </script>
 
   <script>

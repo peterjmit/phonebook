@@ -2,7 +2,7 @@ var Phonebook = Phonebook || {};
 Phonebook.Views = {};
 
 Phonebook.Contact = Backbone.Model.extend({
-    getName: function() {
+    getFullName: function() {
         return this.get('first_name') + ' ' + this.get('last_name');
     },
 
@@ -48,8 +48,18 @@ Phonebook.Views.Contacts = Backbone.View.extend({
     initialize: function () {
         this.listenTo(this.collection, 'add', this.addOne);
         this.listenTo(this.collection, 'reset', this.addAll);
+        this.listenTo(this.collection, 'error', this.handleError);
 
         this.collection.fetch();
+    },
+
+    handleError: function(model, xhr) {
+        var view = new Phonebook.Views.Error({
+            type: 'alert',
+            message: JSON.parse(xhr.response).error
+        });
+
+        this.$('#error-list').append(view.render().el);
     },
 
     addOne: function(contact) {
@@ -100,13 +110,37 @@ Phonebook.Views.Contact = Backbone.View.extend({
     className: 'row contact',
     template: _.template($('#contact-template').html()),
 
+    events: {
+        'click .delete': 'deleteModel'
+    },
+
     initialize: function () {
         this.listenTo(this.model, 'change', this.render);
         this.listenTo(this.model, 'destroy', this.remove);
     },
 
+    deleteModel: function() {
+        if (confirm('Are you sure you want to delete ' + this.model.getFullName())) {
+            this.model.destroy();
+        }
+    },
+
     render: function () {
         this.$el.html(this.template(this.model.toJSON()));
+
+        return this;
+    }
+});
+
+Phonebook.Views.Error = Backbone.View.extend({
+    template: _.template($('#contact-error').html()),
+
+    events: {
+        'click .close': 'remove'
+    },
+
+    render: function () {
+        this.$el.html(this.template(this.options));
 
         return this;
     }
