@@ -12,15 +12,9 @@ class Router implements RouterInterface
 
     public function __construct($routes = array())
     {
-        echo '<pre>';
-
         foreach ($routes as $id => $route) {
             $this->add($id, $route);
         }
-
-        var_dump($this->routes);
-
-        die;
     }
 
     public function match(Request $request)
@@ -32,10 +26,7 @@ class Router implements RouterInterface
 
             isset($route['methods']) && $matcher->matchMethod($route['methods']);
 
-            $matches = array();
             if ($matcher->matches($request)) {
-                $this->getPathAttributes($request, $route['path']);
-
                 return $route;
             }
         }
@@ -43,31 +34,8 @@ class Router implements RouterInterface
         throw new \InvalidArgumentException(sprintf('No matched route for request %s', $request));
     }
 
-    private function getPathAttributes($request, $path)
-    {
-        $attr = array();
-        $path = str_replace('#', '\\#', $path);
-
-        preg_match('#'.$path.'#', rawurldecode($request->getPathInfo()), $attr);
-
-        var_dump($attr);
-
-        return $attr;
-    }
-
     public function add($id, $route)
     {
-        $pattern = '/\{(.*)?\}/';
-
-        $attributes = array();
-        $path = $route['path'];
-
-        preg_match($pattern, $path, $attributes);
-
-        // $route['pattern'] = preg_replace('/', replacement, subject)
-
-        var_dump($attributes);
-
         $this->routes[$id] = $route;
     }
 

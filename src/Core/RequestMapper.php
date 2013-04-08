@@ -49,10 +49,10 @@ class RequestMapper
         $controller = $this->getController($route['service']);
 
         if (!($controller instanceof RestInterface)) {
-            $response = $controller->$route['action']($request);
+            $response = $controller->$route['action']();
         } else {
             $method = static::getRestMethod($request);
-            $response = $controller->$method($request);
+            $response = $controller->$method();
         }
 
         if ($response instanceof Response) {

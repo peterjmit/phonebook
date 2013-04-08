@@ -27,30 +27,30 @@ class RequestMapper extends ObjectBehavior
     /**
      * @param TestController $controller
      */
-    function it_should_map_a_request_to_a_controller_action(
-        $container, $router, $controller, $request, $response)
-    {
-        $path = '/test';
+    // function it_should_map_a_request_to_a_controller_action(
+    //     $container, $router, $controller, $request, $response)
+    // {
+    //     $path = '/test';
 
-        $request->getPathInfo()->willReturn($path);
+    //     $request->getPathInfo()->willReturn($path);
 
-        $controller->index($request)
-            ->shouldBeCalled()
-            ->willReturn($response);
+    //     $controller->index($request)
+    //         ->shouldBeCalled()
+    //         ->willReturn($response);
 
-        $container->get('test_controller')
-            ->shouldBeCalled()
-            ->willReturn($controller);
+    //     $container->get('test_controller')
+    //         ->shouldBeCalled()
+    //         ->willReturn($controller);
 
-        $router->match($path)
-            ->shouldBeCalled()
-            ->willReturn(array(
-                'service' => 'test_controller',
-                'action' => 'index'
-            ));
+    //     $router->match($path)
+    //         ->shouldBeCalled()
+    //         ->willReturn(array(
+    //             'service' => 'test_controller',
+    //             'action' => 'index'
+    //         ));
 
-        $this->handle($request)->willReturn($response);
-    }
+    //     $this->handle($request)->willReturn($response);
+    // }
 
     function it_should_map_a_request_to_a_rest_method($request)
     {
@@ -66,57 +66,57 @@ class RequestMapper extends ObjectBehavior
         $this->shouldThrow('\InvalidArgumentException')->duringGetRestMethod($request);
     }
 
-    /**
-     * @param Controller\RestInterface $restController
-     */
-    function it_should_map_a_request_to_a_rest_controller(
-        $container, $router, $restController, $request, $response)
-    {
-        $path = '/rest';
-        $request->getPathInfo()->willReturn($path);
-        $request->getMethod()->willReturn('GET');
+    // /**
+    //  * @param Controller\RestInterface $restController
+    //  */
+    // function it_should_map_a_request_to_a_rest_controller(
+    //     $container, $router, $restController, $request, $response)
+    // {
+    //     $path = '/rest';
+    //     $request->getPathInfo()->willReturn($path);
+    //     $request->getMethod()->willReturn('GET');
 
-        $restController->get($request)
-            ->shouldBeCalled()
-            ->willReturn($response);
+    //     $restController->get($request)
+    //         ->shouldBeCalled()
+    //         ->willReturn($response);
 
-        $container->get('rest_controller')
-            ->shouldBeCalled()
-            ->willReturn($restController);
+    //     $container->get('rest_controller')
+    //         ->shouldBeCalled()
+    //         ->willReturn($restController);
 
-        $router->match($path)
-            ->shouldBeCalled()
-            ->willReturn(array(
-                'service' => 'rest_controller',
-            ));
+    //     $router->match($path)
+    //         ->shouldBeCalled()
+    //         ->willReturn(array(
+    //             'service' => 'rest_controller',
+    //         ));
 
-        $this->handle($request)->willReturn($response);
-    }
+    //     $this->handle($request)->willReturn($response);
+    // }
 
-    /**
-     * @param TestController $controller
-     */
-    function it_should_throw_an_exception_if_the_controller_does_not_return_a_response_object(
-        $container, $router, $controller, $request, $response)
-    {
-        $path = '/rest';
-        $request->getPathInfo()->willReturn($path);
+    // /**
+    //  * @param TestController $controller
+    //  */
+    // function it_should_throw_an_exception_if_the_controller_does_not_return_a_response_object(
+    //     $container, $router, $controller, $request, $response)
+    // {
+    //     $path = '/rest';
+    //     $request->getPathInfo()->willReturn($path);
 
-        $controller->index($request)
-            ->shouldBeCalled()
-            ->willReturn(array());
+    //     $controller->index($request)
+    //         ->shouldBeCalled()
+    //         ->willReturn(array());
 
-        $container->get('test_controller')
-            ->shouldBeCalled()
-            ->willReturn($controller);
+    //     $container->get('test_controller')
+    //         ->shouldBeCalled()
+    //         ->willReturn($controller);
 
-        $router->match($path)
-            ->shouldBeCalled()
-            ->willReturn(array(
-                'service' => 'test_controller',
-                'action' => 'index'
-            ));
+    //     $router->match($path)
+    //         ->shouldBeCalled()
+    //         ->willReturn(array(
+    //             'service' => 'test_controller',
+    //             'action' => 'index'
+    //         ));
 
-        $this->shouldThrow('\DomainException')->duringHandle($request);
-    }
+    //     $this->shouldThrow('\DomainException')->duringHandle($request);
+    // }
 }

@@ -41,10 +41,38 @@ class ContactManager extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn($stmt);
 
+        $stmt->execute()
+            ->shouldBeCalled()
+            ->willReturn(true);
+
         $hydrator->hydrate(TestSubject::$hydrationConfig, $stmt)
             ->shouldBeCalled()
             ->willReturn($result);
 
         $this->all()->shouldReturn($result);
+    }
+
+    function it_should_find_one_contact($handle, $hydrator, $stmt)
+    {
+        $id = 1;
+        $result = array(
+            'id' => $id,
+            'first_name' => 'John',
+            'last_name' => 'Smith',
+        );
+
+        $handle->prepare(ANY_ARGUMENT)
+            ->shouldBeCalled()
+            ->willReturn($stmt);
+
+        $stmt->execute(array('id' => $id))
+            ->shouldBeCalled()
+            ->willReturn(true);
+
+        $hydrator->hydrate(TestSubject::$hydrationConfig, $stmt)
+            ->shouldBeCalled()
+            ->willReturn(array($result));
+
+        $this->find($id)->shouldReturn($result);
     }
 }

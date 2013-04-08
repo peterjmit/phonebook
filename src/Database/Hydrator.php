@@ -14,8 +14,6 @@ class Hydrator
     {
         $primary = $this->getPrimary($config);
 
-        $stmt->execute();
-
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $newResult = array();

@@ -20,10 +20,6 @@ class Hydrator extends ObjectBehavior
      */
     function it_should_flatten_an_array_of_data_returned_from_pdo_based_on_some_configuration($stmt)
     {
-        $stmt->execute()
-            ->shouldBeCalled()
-            ->willReturn(true);
-
         $stmt->fetchAll(PDO::FETCH_ASSOC)
             ->shouldBeCalled()
             ->willReturn(array(

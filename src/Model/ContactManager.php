@@ -34,7 +34,39 @@ class ContactManager
     {
         $handle = $this->connection->getHandle();
 
-        $sql = <<<'SQL'
+        $sql = $this->getBaseSql();
+
+        $stmt = $handle->prepare($sql);
+        $stmt->execute();
+
+        return $this->getResult($stmt);
+    }
+
+    public function find($id)
+    {
+        $handle = $this->connection->getHandle();
+
+        $sql = $this->getBaseSql();
+
+        // need the leading whitespace for now
+        $sql .= ' WHERE contact_id = :id';
+
+        $stmt = $handle->prepare($sql);
+        $stmt->execute(array('id' => $id));
+
+        $result = $this->getResult($stmt);
+
+        return array_shift($result);
+    }
+
+    private function getResult($stmt)
+    {
+        return $this->hydrator->hydrate(static::$hydrationConfig, $stmt);
+    }
+
+    private function getBaseSql()
+    {
+        return <<<SQL
 SELECT
     contact.id AS contact_id, contact.first_name, contact.last_name,
     number.id AS number_id, number.number,
@@ -43,9 +75,5 @@ FROM contact
 LEFT JOIN contact_number ON contact.id=contact_number.contact_id
 LEFT JOIN number ON contact_number.number_id=number.id
 SQL;
-
-        $stmt = $handle->prepare($sql);
-
-        return $this->hydrator->hydrate(static::$hydrationConfig, $stmt);
     }
 }
