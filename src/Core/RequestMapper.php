@@ -2,7 +2,7 @@
 
 namespace Core;
 
-use Core\ContainerAwareInterface;
+use Core\Container\ContainerAwareInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 

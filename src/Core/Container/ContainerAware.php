@@ -7,6 +7,8 @@ namespace Core\Container;
  */
 abstract class ContainerAware implements ContainerAwareInterface
 {
+    protected $container;
+
     /**
      * Set the container
      *
