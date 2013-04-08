@@ -1,9 +1,8 @@
 <?php
 
 $routes = array(
-    'home' => array(
-        'path' => '/$',
-        'controller' => 'home_controller',
-        'action' => 'index'
+    'contacts' => array(
+        'path' => '/contacts(?:/\d+)',
+        'controller' => 'contact_controller',
     )
 );
