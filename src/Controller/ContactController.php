@@ -10,11 +10,11 @@ class ContactController extends ContainerAware implements RestInterface
 {
     public function get($id = null)
     {
-        $people = $id === null ?
+        $contacts = $id === null ?
             $this->getContactManager()->all() :
             $this->getContactManager()->find($id);
 
-        return new JsonResponse($people);
+        return new JsonResponse($contacts);
     }
 
     public function create()
@@ -24,16 +24,16 @@ class ContactController extends ContainerAware implements RestInterface
 
     public function update($id)
     {
-        $people = $this->getContactManager()->find($id);
+        $contact = $this->getContactManager()->find($id);
 
-        return new JsonResponse($people);
+        return new JsonResponse($contact);
     }
 
     public function delete($id)
     {
-        $people = $this->getContactManager()->find($id);
+        $contact = $this->getContactManager()->find($id);
 
-        return new JsonResponse($people);
+        return new JsonResponse($contact);
     }
 
     private function getContactManager()
