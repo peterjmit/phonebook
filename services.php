@@ -17,4 +17,7 @@ $services = array(
     'contact_manager' => function ($c) {
         return new Model\ContactManager($c->get('db_connection'), $c->get('hydrator'));
     },
+    'contact_validator' => function ($c) {
+        return new Validation\ContactValidator();
+    }
 );

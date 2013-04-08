@@ -34,7 +34,7 @@ class ContactManager
     {
         $handle = $this->connection->getHandle();
 
-        $sql = $this->getBaseSql();
+        $sql = $this->getSelectSql();
 
         $stmt = $handle->prepare($sql);
         $stmt->execute();
@@ -46,7 +46,7 @@ class ContactManager
     {
         $handle = $this->connection->getHandle();
 
-        $sql = $this->getBaseSql();
+        $sql = $this->getSelectSql();
 
         // need the leading whitespace for now
         $sql .= ' WHERE contact_id = :id';
@@ -59,12 +59,91 @@ class ContactManager
         return array_shift($result);
     }
 
+    public function create($data)
+    {
+        $handle = $this->connection->getHandle();
+
+        $handle->beginTransaction();
+
+        try {
+            $stmt = $handle->prepare('INSERT INTO contact (first_name, last_name) values (?, ?)');
+
+            $this->execute($stmt, array($data['first_name'], $data['last_name']));
+
+            $contactId = $handle->lastInsertId();
+
+            $numberIds = array();
+            foreach ($data['numbers'] as $number) {
+                $numberIds[] = $this->createNumber($number);
+            }
+
+            foreach ($numberIds as $numberId) {
+                $this->joinContactAndNumber($contactId, $numberId);
+            }
+        } catch (\Exception $e) {
+            $handle->rollBack();
+
+            throw new \Exception(sprintf('Failed to create contact. Error: %s', $e->getMessage()), 0, $e);
+        }
+
+        $handle->commit();
+    }
+
+    public function update($data, $oldData)
+    {
+        // need to check change set for relationship with numbers
+        $handle = $this->connection->getHandle();
+
+        $stmt = $handle->prepare('UPDATE contact SET (first_name, last_name) values (?, ?)');
+
+        $this->execute($stmt, array($data['first_name'], $data['last_name']));
+    }
+
+    public function delete($id)
+    {
+        $handle = $this->connection->getHandle();
+
+        $stmt = $handle->prepare('DELETE FROM contact WHERE id = :id');
+
+        $this->execute($stmt, array($id));
+    }
+
+    private function createNumber($data)
+    {
+        $handle = $this->connection->getHandle();
+
+        $stmt = $handle->prepare('INSERT INTO number (number) values (?)');
+
+        $this->execute($stmt, array($data['number']));
+
+        return $handle->lastInsertId();
+    }
+
+    private function joinContactAndNumber($contactId, $numberId)
+    {
+        $handle = $this->connection->getHandle();
+
+        $stmt = $handle->prepare('INSERT INTO contact_number (contact_id, number_id, sort) values (?, ?, ?)');
+
+        $this->execute($stmt, array($contactId, $numberId, 0));
+    }
+
+    private function execute($stmt, array $bound = array())
+    {
+        $result = $stmt->execute($bound);
+
+        if (!$result) {
+            $error = $stmt->errorInfo();
+            throw new \RuntimeException($error[2]);
+        }
+    }
+
     private function getResult($stmt)
     {
         return $this->hydrator->hydrate(static::$hydrationConfig, $stmt);
     }
 
-    private function getBaseSql()
+    private function getSelectSql()
     {
         return <<<SQL
 SELECT

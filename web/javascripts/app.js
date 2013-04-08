@@ -67,7 +67,7 @@ Phonebook.Views.Contacts = Backbone.View.extend({
 
         evt.preventDefault();
 
-        this.collection.create(model);
+        this.collection.create(data);
 
         this.resetForm();
     },

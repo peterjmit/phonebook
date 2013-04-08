@@ -1,5 +1,5 @@
 CREATE TABLE `contact` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `first_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `last_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -12,7 +12,7 @@ CREATE TABLE `number` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `contact_number` (
-  `contact_id` int(11) NOT NULL,
+  `contact_id` int(11) NOT NULL AUTO_INCREMENT,
   `number_id` int(11) NOT NULL,
   `sort` tinyint(1) NOT NULL,
   PRIMARY KEY (`contact_id`,`number_id`),
