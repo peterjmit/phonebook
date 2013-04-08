@@ -4,7 +4,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 
-$container = new Core\Container();
+$container = new Core\Container\Container();
 $app = new Core\BaseApp($container);
 
 $app->getContainer()->set('home_controller', function () {
@@ -13,7 +13,7 @@ $app->getContainer()->set('home_controller', function () {
 
 $app->setRoutes(array(
     'home' => array(
-        'path' => '/',
+        'path' => '/$',
         'controller' => 'home_controller',
         'action' => 'index'
     )
@@ -22,4 +22,3 @@ $app->setRoutes(array(
 $request = Request::createFromGlobals();
 $response = $app->handleRequest($request);
 $response->send();
-

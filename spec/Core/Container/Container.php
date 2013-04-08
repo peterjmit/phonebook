@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Core;
+namespace spec\Core\Container;
 
 use PHPSpec2\ObjectBehavior;
 
@@ -8,7 +8,7 @@ class Container extends ObjectBehavior
 {
     function it_should_be_initializable()
     {
-        $this->shouldHaveType('Core\Container');
+        $this->shouldHaveType('Core\Container\Container');
     }
 
     function it_should_allow_setting_of_a_service()

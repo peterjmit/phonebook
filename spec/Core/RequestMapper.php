@@ -7,7 +7,7 @@ use PHPSpec2\ObjectBehavior;
 class RequestMapper extends ObjectBehavior
 {
     /**
-     * @param Core\Container $container
+     * @param Core\Container\Container $container
      * @param Core\RouterInterface $router
      * @param Symfony\Component\HttpFoundation\Request $request
      * @param Symfony\Component\HttpFoundation\Response $response

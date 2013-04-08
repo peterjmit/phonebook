@@ -9,7 +9,7 @@ class BaseApp extends ObjectBehavior
     private $coreDir;
 
     /**
-     * @param Core\ContainerInterface $container
+     * @param Core\Container\ContainerInterface $container
      * @param Core\RequestMapper $mapper
      */
     function let($container, $mapper)
@@ -98,6 +98,6 @@ class BaseApp extends ObjectBehavior
 
     function it_should_return_the_container()
     {
-        $this->getContainer()->shouldReturnAnInstanceOf('Core\ContainerInterface');
+        $this->getContainer()->shouldReturnAnInstanceOf('Core\Container\ContainerInterface');
     }
 }

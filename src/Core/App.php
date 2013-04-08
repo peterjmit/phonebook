@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Core\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class App implements AppInterface
