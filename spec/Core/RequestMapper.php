@@ -10,7 +10,7 @@ class RequestMapper extends ObjectBehavior
 {
     /**
      * @param Core\Container\Container $container
-     * @param Core\RouterInterface $router
+     * @param Symfony\Component\Routing\Matcher\UrlMatcherInterface $router
      * @param Symfony\Component\HttpFoundation\Request $request
      * @param Symfony\Component\HttpFoundation\Response $response
      */
@@ -30,7 +30,11 @@ class RequestMapper extends ObjectBehavior
     function it_should_map_a_request_to_a_controller_action(
         $container, $router, $controller, $request, $response)
     {
-        $controller->index()
+        $path = '/test';
+
+        $request->getPathInfo()->willReturn($path);
+
+        $controller->index($request)
             ->shouldBeCalled()
             ->willReturn($response);
 
@@ -38,10 +42,10 @@ class RequestMapper extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn($controller);
 
-        $router->match($request)
+        $router->match($path)
             ->shouldBeCalled()
             ->willReturn(array(
-                'controller' => 'test_controller',
+                'service' => 'test_controller',
                 'action' => 'index'
             ));
 
@@ -68,9 +72,11 @@ class RequestMapper extends ObjectBehavior
     function it_should_map_a_request_to_a_rest_controller(
         $container, $router, $restController, $request, $response)
     {
+        $path = '/rest';
+        $request->getPathInfo()->willReturn($path);
         $request->getMethod()->willReturn('GET');
 
-        $restController->get()
+        $restController->get($request)
             ->shouldBeCalled()
             ->willReturn($response);
 
@@ -78,10 +84,10 @@ class RequestMapper extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn($restController);
 
-        $router->match($request)
+        $router->match($path)
             ->shouldBeCalled()
             ->willReturn(array(
-                'controller' => 'rest_controller',
+                'service' => 'rest_controller',
             ));
 
         $this->handle($request)->willReturn($response);
@@ -93,7 +99,10 @@ class RequestMapper extends ObjectBehavior
     function it_should_throw_an_exception_if_the_controller_does_not_return_a_response_object(
         $container, $router, $controller, $request, $response)
     {
-        $controller->index()
+        $path = '/rest';
+        $request->getPathInfo()->willReturn($path);
+
+        $controller->index($request)
             ->shouldBeCalled()
             ->willReturn(array());
 
@@ -101,30 +110,13 @@ class RequestMapper extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn($controller);
 
-        $router->match($request)
+        $router->match($path)
             ->shouldBeCalled()
             ->willReturn(array(
-                'controller' => 'test_controller',
+                'service' => 'test_controller',
                 'action' => 'index'
             ));
 
         $this->shouldThrow('\DomainException')->duringHandle($request);
     }
-
-    function it_should_throw_an_exception_if_the_route_has_methods_defined_and_the_request_method_is_not_allowed(
-        $router, $request)
-    {
-        $request->getMethod()->willReturn('DELETE');
-
-        $router->match($request)
-            ->shouldBeCalled()
-            ->willReturn(array(
-                'controller' => 'test_controller',
-                'action' => 'index',
-                'methods' => 'GET'
-            ));
-
-        $this->shouldThrow('\InvalidArgumentException')->duringhandle($request);
-    }
-
 }

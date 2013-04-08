@@ -9,11 +9,11 @@ interface RestInterface
     const PUT = 'update';
     const DELETE = 'delete';
 
-    public function get($id = null);
+    public function get();
 
     public function create();
 
-    public function update($id);
+    public function update();
 
-    public function delete($id);
+    public function delete();
 }

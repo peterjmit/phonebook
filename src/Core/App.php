@@ -3,7 +3,13 @@
 namespace Core;
 
 use Core\Container\ContainerInterface;
+
 use Symfony\Component\HttpFoundation\Request;
+
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
 
 abstract class App implements AppInterface
 {
@@ -23,13 +29,10 @@ abstract class App implements AppInterface
 
     public function boot()
     {
-        if (!is_array($this->routes) || empty($this->routes)) {
-            throw new \InvalidArgumentException('You haven\'t defined any routes for your application!');
-        }
-
         $this->booted = true;
 
         $this->initializeContainer();
+        $this->initializeRouter();
     }
 
     public function shutdown()
@@ -47,6 +50,10 @@ abstract class App implements AppInterface
         if (false === $this->booted) {
             $this->boot();
         }
+
+        $this->getContainer()->set('request', function () use ($request) {
+            return $request;
+        });
 
         return $this->getRequestMapper()->handle($request);
     }
@@ -103,11 +110,30 @@ abstract class App implements AppInterface
         });
 
         $this->container->set('request_mapper', function ($c) {
-            return new RequestMapper($c, $c['router']);
+            return new RequestMapper($c, $c->get('router'));
         });
+    }
 
-        $this->container->set('router', function ($c) use ($app) {
-            return new Router($app->routes);
+    private function initializeRouter()
+    {
+        $routes = new RouteCollection();
+
+        foreach ($this->routes as $name => $route) {
+            $r = new Route($route['path']);
+            $r->setDefaults($route['defaults']);
+            isset($route['methods']) && $r->setMethods($route['methods']);
+
+            $routes->add($name, $r);
+        }
+
+        // unset the raw routes
+        $this->routes = null;
+
+        $this->container->set('router', function ($c) use ($routes) {
+            $context = new RequestContext();
+            $context->fromRequest($c->get('request'));
+
+            return new UrlMatcher($routes, $context);
         });
     }
 }

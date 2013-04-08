@@ -21,7 +21,7 @@ class RequestMapper
         'DELETE' => RestInterface::DELETE,
     );
 
-    public function __construct($container, RouterInterface $router)
+    public function __construct($container, $router)
     {
         $this->container = $container;
         $this->router = $router;
@@ -39,19 +39,20 @@ class RequestMapper
      */
     public function handle(Request $request)
     {
-        $method = $request->getMethod();
+        $route = $this->router->match($request->getPathInfo());
 
-        $route = $this->router->match($request);
+        // add the route attributes to the request
+        foreach ($route as $key => $value) {
+            $request->attributes->set($key, $value);
+        }
 
-        $this->checkAllowed($request, $route);
-
-        $controller = $this->getController($route['controller']);
+        $controller = $this->getController($route['service']);
 
         if (!($controller instanceof RestInterface)) {
-            $response = $controller->$route['action']();
+            $response = $controller->$route['action']($request);
         } else {
             $method = static::getRestMethod($request);
-            $response = $controller->$method();
+            $response = $controller->$method($request);
         }
 
         if ($response instanceof Response) {
@@ -73,28 +74,6 @@ class RequestMapper
         }
 
         return $controller;
-    }
-
-    private function checkAllowed(Request $request, $route)
-    {
-        if (!isset($route['methods']) || empty($route['methods'])) {
-            return;
-        }
-
-        if (!is_array($route['methods'])) {
-            $route['methods'] = array($route['methods']);
-        }
-
-        if (in_array($request->getMethod(), $route['methods'])) {
-            return;
-        }
-
-        throw new \InvalidArgumentException(sprintf(
-            'Method "%s" not allowed (Allowed methods: %s)',
-            $request->getMethod(),
-            implode(', ', $route['methods'])
-        ));
-
     }
 
     public static function getRestMethod(Request $request)

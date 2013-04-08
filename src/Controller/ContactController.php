@@ -8,32 +8,53 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactController extends ContainerAware implements RestInterface
 {
-    public function get($id = null)
+    public function get()
     {
+        $request = $this->getRequest();
+        $contactManager = $this->getContactManager();
+
+        $id = $request->attributes->get('id', null);
+
         $contacts = $id === null ?
-            $this->getContactManager()->all() :
-            $this->getContactManager()->find($id);
+            $contactManager->all() :
+            $contactManager->find($id);
 
         return new JsonResponse($contacts);
     }
 
     public function create()
     {
-
+        $request = $this->getRequest();
+        $contactManager = $this->getContactManager();
     }
 
-    public function update($id)
+    public function update()
     {
-        $contact = $this->getContactManager()->find($id);
+        $request = $this->getRequest();
+        $contactManager = $this->getContactManager();
+
+        $id = $request->attributes->get('id', null);
+
+        $contact = $contactManager->find($id);
 
         return new JsonResponse($contact);
     }
 
-    public function delete($id)
+    public function delete()
     {
-        $contact = $this->getContactManager()->find($id);
+        $request = $this->getRequest();
+        $contactManager = $this->getContactManager();
+
+        $id = $request->attributes->get('id', null);
+
+        $contact = $contactManager->find($id);
 
         return new JsonResponse($contact);
+    }
+
+    private function getRequest()
+    {
+        return $this->container->get('request');
     }
 
     private function getContactManager()

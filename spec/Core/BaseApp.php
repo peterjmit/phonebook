@@ -20,7 +20,7 @@ class BaseApp extends ObjectBehavior
 
         // lazy setting of routes - this is actually invalid
         // but we will never validate here so it doesnt matter
-        $this->beConstructedWith($container, array('test'));
+        $this->beConstructedWith($container, array());
     }
 
     function it_should_be_initializable()

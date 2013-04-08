@@ -77,4 +77,23 @@ class Router extends ObjectBehavior
             'test' => $route
         ));
     }
+
+
+    function it_should_throw_an_exception_if_the_route_has_methods_defined_and_the_request_method_is_not_allowed($request)
+    {
+        $route = array(
+            'path' => '/contact/1',
+            'controller' => 'test_controller',
+            'methods' => 'GET'
+        );
+
+        $this->set(array(
+            'test' => $route
+        ));
+
+        $request->getMethod()->willReturn('DELETE');
+        $request->__toString()->willReturn('Test');
+
+        $this->shouldThrow('\InvalidArgumentException')->duringMatch($request);
+    }
 }

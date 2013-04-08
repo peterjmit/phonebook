@@ -2,13 +2,17 @@
 
 $routes = array(
     'contacts' => array(
-        'path' => '/contacts$',
-        'controller' => 'contact_controller',
+        'path' => '/contacts',
+        'defaults' => array(
+            'service' => 'contact_controller',
+        ),
         'methods' => array('GET'),
     ),
     'contact' => array(
-        'path' => '/contacts/(\d+)$',
-        'controller' => 'contact_controller',
+        'path' => '/contacts/{id}',
+        'defaults' => array(
+            'service' => 'contact_controller',
+        ),
         'methods' => array('GET', 'POST', 'PUT', 'DELETE')
     )
 );
