@@ -71,6 +71,20 @@ abstract class App implements AppInterface
         $this->routes = $routes;
     }
 
+    public function setParameters(array $params)
+    {
+        foreach ($params as $key => $value) {
+            $this->container->setParam($key, $value);
+        }
+    }
+
+    public function registerServices(array $services)
+    {
+        foreach ($services as $key => $value) {
+            $this->container->set($key, $value);
+        }
+    }
+
     public function getRequestMapper()
     {
         return $this->container->get('request_mapper');

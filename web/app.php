@@ -11,10 +11,12 @@ require_once __DIR__.'/../parameters.php';
 
 use Symfony\Component\HttpFoundation\Request;
 
-$container = new Core\Container\Container(array_merge($parameters, $services));
+$container = new Core\Container\Container();
 $app = new Core\BaseApp($container);
 
 $app->setRoutes($routes);
+$app->setParameters($parameters);
+$app->registerServices($services);
 
 $request = Request::createFromGlobals();
 $response = $app->handleRequest($request);
