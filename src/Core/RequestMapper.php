@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Core\ContainerAwareInterface;
+
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,11 +21,22 @@ class RequestMapper
     {
         $route = $this->router->match($request);
 
-        $controller = $this->container->get($route['controller']);
+        $controller = $this->getController($route['controller']);
         $method = $this->getControllerAction($route['action']);
 
         // reflection to add params to controller argument...
         return $controller->$method();
+    }
+
+    protected function getController($id)
+    {
+        $controller = $this->container->get($id);
+
+        if ($controller instanceof ContainerAwareInterface) {
+            $controller->setContainer($this->container);
+        }
+
+        return $controller;
     }
 
     private function getControllerAction($string)
