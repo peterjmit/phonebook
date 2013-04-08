@@ -48,20 +48,20 @@ class RequestMapper
 
         $controller = $this->getController($route['service']);
 
-        if (!($controller instanceof RestInterface)) {
-            $response = $controller->$route['action']();
-        } else {
-            $method = static::getRestMethod($request);
-            $response = $controller->$method();
-        }
+        $method = $controller instanceof RestInterface ?
+            $method = static::getRestMethod($request) :
+            $route['action'];
+
+        $response = $controller->$method();
 
         if ($response instanceof Response) {
             return $response;
         }
 
         throw new \DomainException(sprintf(
-            'Controller %s must return an instance of Symfony\Component\HttpFoundation\Response',
-            get_class($controller)
+            'Method %s#%s must return an instance of Symfony\Component\HttpFoundation\Response',
+            get_class($controller),
+            $method
         ));
     }
 

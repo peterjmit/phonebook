@@ -33,18 +33,20 @@ class Hydrator
                 if (isset($config[$key]) && $config[$key]['type'] === self::COLLECTION) {
                     $collectionName = $config[$key]['name'];
                     $collection = isset($newRow[$collectionName]) ? $newRow[$collectionName] : array();
-                    $collection[$value] = array();
-                    $collection[$value][$config[$key]['map_to']] = $value;
+                    $item = array();
+                    $item[$config[$key]['map_to']] = $value;
                     foreach ($config[$key]['properties'] as $collectionProperty) {
-                        $collection[$value][$collectionProperty] = $row[$collectionProperty];
+                        $item[$collectionProperty] = $row[$collectionProperty];
                     }
-                    $newRow[$collectionName] = $collection;
+                    $newRow[$collectionName][] = $item;
                 }
 
             }
 
             $newResult[$collateOnKey] = $newRow;
         }
+
+        sort($newResult);
 
         return $newResult;
     }
