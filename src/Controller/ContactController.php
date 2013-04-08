@@ -17,6 +17,11 @@ class ContactController extends ContainerAware implements RestInterface
         return new JsonResponse($people);
     }
 
+    public function create()
+    {
+
+    }
+
     public function update($id)
     {
         $people = $this->getContactManager()->find($id);

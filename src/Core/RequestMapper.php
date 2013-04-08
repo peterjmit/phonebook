@@ -4,6 +4,8 @@ namespace Core;
 
 use Core\Container\ContainerAwareInterface;
 
+use Controller\RestInterface;
+
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -11,6 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RequestMapper
 {
+    protected static $restMap = array(
+        'GET' => RestInterface::GET,
+        'POST' => RestInterface::POST,
+        'PUT' => RestInterface::PUT,
+        'DELETE' => RestInterface::DELETE,
+    );
+
     public function __construct($container, RouterInterface $router)
     {
         $this->container = $container;
@@ -22,9 +31,13 @@ class RequestMapper
         $route = $this->router->match($request);
 
         $controller = $this->getController($route['controller']);
-        $method = $this->getControllerAction($route['action']);
 
-        // reflection to add params to controller argument...
+        if (!($controller instanceof RestInterface)) {
+            return $controller->$route['action']();
+        }
+
+        $method = static::getRestMethod($request);
+
         return $controller->$method();
     }
 
@@ -39,8 +52,14 @@ class RequestMapper
         return $controller;
     }
 
-    private function getControllerAction($string)
+    public static function getRestMethod(Request $request)
     {
-        return $string . 'Action';
+        $method = $request->getMethod();
+
+        if (!array_key_exists($method, static::$restMap)) {
+            throw new \InvalidArgumentException(sprintf('Invalid REST method "%s" requested', $method));
+        }
+
+        return static::$restMap[$method];
     }
 }
