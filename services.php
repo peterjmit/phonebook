@@ -7,7 +7,10 @@ $services = array(
     },
 
     // database
-    'db_connection' => function($c) {
+    'db_connection' => function ($c) {
         return new Database\Connection($c->getParam('database'));
+    },
+    'contact_manager' => function ($c) {
+        return new Model\ContactManager($c->get('db_connection'));
     },
 );
