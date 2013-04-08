@@ -7,6 +7,7 @@ use Core\Container\ContainerAwareInterface;
 use Controller\RestInterface;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Map requests to controllers
@@ -26,6 +27,16 @@ class RequestMapper
         $this->router = $router;
     }
 
+    /**
+     * Maps a request to a controller method,
+     * or a rest method on a Controller implementing RestInterface
+     *
+     * @param  Request $request
+     *
+     * @return Response
+     *
+     * @throws DomainException If an instance of Response is not returned
+     */
     public function handle(Request $request)
     {
         $route = $this->router->match($request);
@@ -33,12 +44,20 @@ class RequestMapper
         $controller = $this->getController($route['controller']);
 
         if (!($controller instanceof RestInterface)) {
-            return $controller->$route['action']();
+            $response = $controller->$route['action']();
+        } else {
+            $method = static::getRestMethod($request);
+            $response = $controller->$method();
         }
 
-        $method = static::getRestMethod($request);
+        if ($response instanceof Response) {
+            return $response;
+        }
 
-        return $controller->$method();
+        throw new \DomainException(sprintf(
+            'Controller %s must return an instance of Symfony\Component\HttpFoundation\Response',
+            get_class($controller)
+        ));
     }
 
     protected function getController($id)

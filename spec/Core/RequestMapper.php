@@ -65,7 +65,8 @@ class RequestMapper extends ObjectBehavior
     /**
      * @param Controller\RestInterface $restController
      */
-    function it_should_map_a_request_to_a_rest_controller($container, $router, $restController, $request, $response)
+    function it_should_map_a_request_to_a_rest_controller(
+        $container, $router, $restController, $request, $response)
     {
         $request->getMethod()->willReturn('GET');
 
@@ -84,6 +85,30 @@ class RequestMapper extends ObjectBehavior
             ));
 
         $this->handle($request)->willReturn($response);
+    }
+
+    /**
+     * @param TestController $controller
+     */
+    function it_should_throw_an_exception_if_the_controller_does_not_return_a_response_object(
+        $container, $router, $controller, $request, $response)
+    {
+        $controller->index()
+            ->shouldBeCalled()
+            ->willReturn(array());
+
+        $container->get('test_controller')
+            ->shouldBeCalled()
+            ->willReturn($controller);
+
+        $router->match($request)
+            ->shouldBeCalled()
+            ->willReturn(array(
+                'controller' => 'test_controller',
+                'action' => 'index'
+            ));
+
+        $this->shouldThrow('\DomainException')->duringHandle($request);
     }
 
 }
