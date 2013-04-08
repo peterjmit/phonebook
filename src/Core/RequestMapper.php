@@ -39,7 +39,11 @@ class RequestMapper
      */
     public function handle(Request $request)
     {
+        $method = $request->getMethod();
+
         $route = $this->router->match($request);
+
+        $this->checkAllowed($request, $route);
 
         $controller = $this->getController($route['controller']);
 
@@ -69,6 +73,28 @@ class RequestMapper
         }
 
         return $controller;
+    }
+
+    private function checkAllowed(Request $request, $route)
+    {
+        if (!isset($route['methods']) || empty($route['methods'])) {
+            return;
+        }
+
+        if (!is_array($route['methods'])) {
+            $route['methods'] = array($route['methods']);
+        }
+
+        if (in_array($request->getMethod(), $route['methods'])) {
+            return;
+        }
+
+        throw new \InvalidArgumentException(sprintf(
+            'Method "%s" not allowed (Allowed methods: %s)',
+            $request->getMethod(),
+            implode(', ', $route['methods'])
+        ));
+
     }
 
     public static function getRestMethod(Request $request)

@@ -111,4 +111,20 @@ class RequestMapper extends ObjectBehavior
         $this->shouldThrow('\DomainException')->duringHandle($request);
     }
 
+    function it_should_throw_an_exception_if_the_route_has_methods_defined_and_the_request_method_is_not_allowed(
+        $router, $request)
+    {
+        $request->getMethod()->willReturn('DELETE');
+
+        $router->match($request)
+            ->shouldBeCalled()
+            ->willReturn(array(
+                'controller' => 'test_controller',
+                'action' => 'index',
+                'methods' => 'GET'
+            ));
+
+        $this->shouldThrow('\InvalidArgumentException')->duringhandle($request);
+    }
+
 }
