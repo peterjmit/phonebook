@@ -60,17 +60,7 @@ class RequestMapper
         $controller = $this->getController($route['service']);
 
         // return reflection method
-        $response = $this->invokeMethod($controller, $route, $request);
-
-        if ($response instanceof Response) {
-            return $response;
-        }
-
-        throw new \DomainException(sprintf(
-            'Method %s#%s must return an instance of Symfony\Component\HttpFoundation\Response',
-            get_class($controller),
-            $method
-        ));
+        return $this->invokeMethod($controller, $route, $request);
     }
 
     /**
@@ -113,7 +103,17 @@ class RequestMapper
             }
         }
 
-        return $reflectionMethod->invokeArgs($controller, $invokeWith);
+        $response = $reflectionMethod->invokeArgs($controller, $invokeWith);
+
+        if ($response instanceof Response) {
+            return $response;
+        }
+
+        throw new \DomainException(sprintf(
+            'Method %s#%s must return a response object',
+            get_class($controller),
+            $method
+        ));
     }
 
     protected function getController($id)

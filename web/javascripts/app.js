@@ -68,12 +68,18 @@ Phonebook.Views.Contacts = Backbone.View.extend({
     },
 
     handleServerError: function(model, xhr) {
-        model.destroy();
+        if (model instanceof Backbone.Model) {
+            model.destroy();
+        }
+
         this.flash('alert', xhr.statusText);
     },
 
     handleValidationError: function(model, error, options) {
-        model.destroy();
+        if (model instanceof Backbone.Model) {
+            model.destroy();
+        }
+
         this.flash('alert', error);
     },
 
