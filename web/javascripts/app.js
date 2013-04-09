@@ -15,27 +15,39 @@ Phonebook.Contact = Backbone.Model.extend({
     },
 
     validate: function(attrs, options) {
-        var errors = [];
+        var errors = [], hasValidNums;
 
         if (!attrs.first_name) {
             errors.push('Your contact needs a first name!');
         }
+
         if (!attrs.last_name) {
             errors.push('Your contact needs a last name!');
         }
-        if (!attrs.numbers) {
+
+        // check if number property in array isn't empty
+        hasValidNums = _.chain(attrs.numbers)
+            .pluck('number')
+            .every(function (v) { return !!v; })
+            .value();
+
+        if (!attrs.numbers || !_.isArray(attrs.numbers) || !hasValidNums) {
             errors.push('Your contact needs a number');
         }
 
         if (errors.length > 0) {
-            return errors.join(' ,');
+            return errors.join(', ');
         }
     }
 });
 
 Phonebook.Contacts = Backbone.Collection.extend({
     model: Phonebook.Contact,
-    url: 'http://local.phonebook.com/contacts'
+    url: 'http://local.phonebook.com/contacts',
+
+    comparator: function(contact) {
+        return contact.get('last_name');
+    }
 });
 
 Phonebook.Views.Contacts = Backbone.View.extend({
@@ -47,19 +59,31 @@ Phonebook.Views.Contacts = Backbone.View.extend({
 
     initialize: function () {
         this.listenTo(this.collection, 'add', this.addOne);
+        this.listenTo(this.collection, 'sync', this.resetForm);
         this.listenTo(this.collection, 'reset', this.addAll);
-        this.listenTo(this.collection, 'error', this.handleError);
+        this.listenTo(this.collection, 'error', this.handleServerError);
+        this.listenTo(this.collection, 'invalid', this.handleValidationError);
 
         this.collection.fetch();
     },
 
-    handleError: function(model, xhr) {
+    handleServerError: function(model, xhr) {
+        model.destroy();
+        this.flash('alert', xhr.response);
+    },
+
+    handleValidationError: function(model, error, options) {
+        model.destroy();
+        this.flash('alert', error);
+    },
+
+    flash: function(type, message) {
         var view = new Phonebook.Views.Error({
-            type: 'alert',
-            message: JSON.parse(xhr.response).error
+            type: type,
+            message: message
         });
 
-        this.$('#error-list').append(view.render().el);
+        this.$('#flash-list').html(view.render().el);
     },
 
     addOne: function(contact) {
@@ -78,8 +102,6 @@ Phonebook.Views.Contacts = Backbone.View.extend({
         evt.preventDefault();
 
         this.collection.create(data);
-
-        this.resetForm();
     },
 
     serializeForm: function() {
@@ -99,9 +121,14 @@ Phonebook.Views.Contacts = Backbone.View.extend({
     },
 
     resetForm: function() {
-        this.$('#contact-add').find('input').each(function (idx, child) {
+        var $form = this.$('#contact-add');
+
+        $form.find('input').each(function (idx, child) {
             $(child).val('');
         });
+
+        // focus the first input
+        $form.find('input').first().focus();
     }
 });
 
