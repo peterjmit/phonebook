@@ -87,6 +87,8 @@ class ContactManager
         }
 
         $handle->commit();
+
+        return $this->find($contactId);
     }
 
     public function update($data, $oldData)

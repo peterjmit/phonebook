@@ -32,7 +32,8 @@ class ContactController extends ContainerAware implements RestInterface
         $this->getContactValidator()->validate($data);
 
         try {
-            $contactManager->create($data);
+            $data = $contactManager->create($data);
+            $response->setData($data);
         } catch (\Exception $e) {
             $response->setStatusCode(500);
             $response->setData(array(
