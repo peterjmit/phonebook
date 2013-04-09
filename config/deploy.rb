@@ -28,11 +28,9 @@ end
 
 namespace :deploy do
   task :restart_fpm do
-    capifony_pretty_print "--> Restarting nginx"
+    print "--> Restarting nginx"
 
     run "sudo service php5-fpm restart"
-
-    capifony_puts_ok
   end
 end
 
