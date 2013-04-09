@@ -46,7 +46,7 @@ Phonebook.Contacts = Backbone.Collection.extend({
     url: '/contacts',
 
     comparator: function(contact) {
-        return contact.get('last_name');
+        return contact.get('last_name').toLowerCase();
     }
 });
 
@@ -60,6 +60,7 @@ Phonebook.Views.Contacts = Backbone.View.extend({
     initialize: function () {
         this.listenTo(this.collection, 'add', this.addOne);
         this.listenTo(this.collection, 'sync', this.resetForm);
+        this.listenTo(this.collection, 'sort', this.addAll);
         this.listenTo(this.collection, 'reset', this.addAll);
         this.listenTo(this.collection, 'error', this.handleServerError);
         this.listenTo(this.collection, 'invalid', this.handleValidationError);
@@ -99,6 +100,7 @@ Phonebook.Views.Contacts = Backbone.View.extend({
     },
 
     addAll: function() {
+        this.$('#contact-list').empty();
         this.collection.each(this.addOne, this);
     },
 

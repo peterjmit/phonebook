@@ -155,6 +155,7 @@ SELECT
 FROM contact
 LEFT JOIN contact_number ON contact.id=contact_number.contact_id
 LEFT JOIN number ON contact_number.number_id=number.id
+ORDER BY contact.last_name ASC
 SQL;
     }
 }

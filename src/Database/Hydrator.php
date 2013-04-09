@@ -46,9 +46,13 @@ class Hydrator
             $newResult[$collateOnKey] = $newRow;
         }
 
-        sort($newResult);
+        // not ideal performance wise...but otherwise we screw with json_encode
+        $data = array();
+        foreach ($newResult as $row) {
+            $data[] = $row;
+        }
 
-        return $newResult;
+        return $data;
     }
 
     private function getPrimary($config)
