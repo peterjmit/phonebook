@@ -69,7 +69,7 @@ Phonebook.Views.Contacts = Backbone.View.extend({
 
     handleServerError: function(model, xhr) {
         model.destroy();
-        this.flash('alert', xhr.response);
+        this.flash('alert', xhr.statusText);
     },
 
     handleValidationError: function(model, error, options) {

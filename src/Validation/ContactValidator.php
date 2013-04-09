@@ -48,16 +48,18 @@ class ContactValidator
 
     private function sanitizeInt($variable)
     {
-        return filter_var(str_replace(' ', '', $variable), FILTER_SANITIZE_NUMBER_INT);
+        return filter_var($variable, FILTER_SANITIZE_NUMBER_INT);
     }
 
     private function assertTelephone($string)
     {
-        if (preg_match('/\d[+-]\d/', $string) === 1) {
+        // Strings should be of equal length once stripped of
+        // non numerics, otherwise the number is invalid
+        if (strlen(filter_var($string, FILTER_SANITIZE_NUMBER_INT)) === strlen(str_replace(' ', '', $string))) {
             return;
         }
 
-        throw new ValidationException(sprintf('%s is not a valid number', $string));
+        throw new ValidationException(sprintf('%s is not a valid phone number', $string));
     }
 
     private function assertExistsInArray($key, $array)

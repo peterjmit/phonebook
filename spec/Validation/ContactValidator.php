@@ -14,7 +14,9 @@ class ContactValidator extends ObjectBehavior
             'first_name' => 'John',
             'last_name' => 'Smith',
             'numbers' => array(
-               array('number' => '+44 123-456-7890')
+               array('number' => '+44 123-456-7890'),
+               array('number' => '01234567890'),
+               array('number' => '01234-567-890'),
             ),
         );
     }
@@ -28,7 +30,9 @@ class ContactValidator extends ObjectBehavior
     {
         $filteredData = array(
             'numbers' => array(
-                array('number' => '+44123-456-7890')
+                array('number' => '+44123-456-7890'),
+                array('number' => '01234567890'),
+                array('number' => '01234-567-890'),
             ),
             'first_name' => 'John',
             'last_name' => 'Smith',
