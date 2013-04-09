@@ -41,18 +41,15 @@ class RequestMapper
     {
         $route = $this->router->match($request->getPathInfo());
 
-        // add the route attributes to the request
+        $controller = $this->getController($route['service']);
+
+        // add the attributes to the request object
         foreach ($route as $key => $value) {
             $request->attributes->set($key, $value);
         }
 
-        $controller = $this->getController($route['service']);
-
-        $method = $controller instanceof RestInterface ?
-            $method = static::getRestMethod($request) :
-            $route['action'];
-
-        $response = $controller->$method();
+        // return reflection method
+        $response = $this->invokeMethod($controller, $route, $request);
 
         if ($response instanceof Response) {
             return $response;
@@ -63,6 +60,49 @@ class RequestMapper
             get_class($controller),
             $method
         ));
+    }
+
+    /**
+     * Invokes the method for the route on the controller (RESTful or defined)
+     * uses reflection to check the method args, and provides any if we can
+     *
+     * @param  object  $controller The controller to run
+     * @param  array   $route      Route information/params
+     * @param  Request $request    A request object
+     *
+     * @return Response            A response object
+     */
+    protected function invokeMethod($controller, $route, $request)
+    {
+        $possibleValuesToPass = array_merge($route, array('request' => $request));
+
+        $r = new \ReflectionClass($controller);
+
+        $method = $controller instanceof RestInterface && !isset($route['action']) ?
+            $method = static::getRestMethod($request) :
+            $route['action'];
+
+        $reflectionMethod = $r->getMethod($method);
+
+        $invokeWith = array();
+        foreach ($reflectionMethod->getParameters() as $param) {
+            if (!isset($possibleValuesToPass[$param->getName()])) {
+                $invokeWith[] = $param->getDefaultValue();
+                continue;
+            }
+
+            $item = $possibleValuesToPass[$param->getName()];
+
+            if (!$param->getClass()) {
+                $invokeWith[] = $item;
+            } elseif ($param->getClass()->isInstance($item)) {
+                $invokeWith[] = $item;
+            } else {
+                $invokeWith[] = $param->getDefaultValue();
+            }
+        }
+
+        return $reflectionMethod->invokeArgs($controller, $invokeWith);
     }
 
     protected function getController($id)
