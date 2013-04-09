@@ -26,6 +26,16 @@ def remote_file_exists?(full_path)
   'true' == capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
 end
 
+namespace :deploy do
+  task :restart_fpm do
+    capifony_pretty_print "--> Restarting nginx"
+
+    run "sudo service php5-fpm restart"
+
+    capifony_puts_ok
+  end
+end
+
 # Copied from capifony
 namespace :composer do
   desc "Gets composer and installs it"
@@ -93,5 +103,7 @@ end
 after "deploy:finalize_update" do
   composer.update
 end
+
+after "deploy:finalize_update", "deploy:restart_fpm"
 
 after "deploy", "deploy:cleanup"
