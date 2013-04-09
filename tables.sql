@@ -18,6 +18,6 @@ CREATE TABLE `contact_number` (
   PRIMARY KEY (`contact_id`,`number_id`),
   KEY `IDX_PEOPLE_ID_NUMBERS` (`contact_id`),
   KEY `IDX_NUMBER_ID_PEOPLE` (`number_id`),
-  CONSTRAINT `FK_PEOPLE_ID_NUMBERS` FOREIGN KEY (`contact_id`) REFERENCES `contact` (`id`),
-  CONSTRAINT `FK_NUMBER_ID_PEOPLE` FOREIGN KEY (`number_id`) REFERENCES `number` (`id`)
+  CONSTRAINT `FK_PEOPLE_ID_NUMBERS` FOREIGN KEY (`contact_id`) REFERENCES `contact` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FK_NUMBER_ID_PEOPLE` FOREIGN KEY (`number_id`) REFERENCES `number` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
