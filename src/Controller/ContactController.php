@@ -6,17 +6,15 @@ use Core\Container\ContainerAware;
 
 use Validation\ValidationException;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactController extends ContainerAware implements RestInterface
 {
-    public function get()
+    public function get(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $contactManager = $this->getContactManager();
         $response = new JsonResponse();
-
-        $id = $request->attributes->get('id', null);
 
         $contacts = $id === null ?
             $contactManager->all() :
@@ -31,9 +29,8 @@ class ContactController extends ContainerAware implements RestInterface
         return $response;
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $request = $this->getRequest();
         $contactManager = $this->getContactManager();
         $response = new JsonResponse();
 
@@ -52,13 +49,10 @@ class ContactController extends ContainerAware implements RestInterface
         return $response;
     }
 
-    public function update()
+    public function update(Request $request, $id)
     {
-        $request = $this->getRequest();
         $contactManager = $this->getContactManager();
         $response = new JsonResponse();
-
-        $id = $request->attributes->get('id', null);
 
         $contact = $contactManager->find($id);
 
@@ -81,13 +75,10 @@ class ContactController extends ContainerAware implements RestInterface
         return $response;
     }
 
-    public function delete()
+    public function delete(Request $request, $id)
     {
-        $request = $this->getRequest();
         $contactManager = $this->getContactManager();
         $response = new JsonResponse();
-
-        $id = $request->attributes->get('id', null);
 
         $contact = $contactManager->find($id);
 

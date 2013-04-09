@@ -74,7 +74,7 @@ class RequestMapper
      */
     protected function invokeMethod($controller, $route, $request)
     {
-        $possibleValuesToPass = array_merge($route, array('request' => $request));
+        $possibleValuesToPass = array_merge($route);
 
         $r = new \ReflectionClass($controller);
 
