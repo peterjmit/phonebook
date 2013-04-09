@@ -5,9 +5,9 @@ error_reporting(-1);
 ini_set('display_errors', 1);
 
 require_once __DIR__.'/../vendor/autoload.php';
-require_once __DIR__.'/../services.php';
-require_once __DIR__.'/../routes.php';
-require_once __DIR__.'/../parameters.php';
+require_once __DIR__.'/../config/services.php';
+require_once __DIR__.'/../config/routes.php';
+require_once __DIR__.'/../config/parameters.php';
 
 use Symfony\Component\HttpFoundation\Request;
 
