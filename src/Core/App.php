@@ -5,6 +5,7 @@ namespace Core;
 use Core\Container\ContainerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
@@ -55,7 +56,13 @@ abstract class App implements AppInterface
             return $request;
         });
 
-        return $this->getRequestMapper()->handle($request);
+        try {
+            return $this->getRequestMapper()->handle($request);
+        } catch(\Exception $e) {
+            return new Response('Sorry there has been an error with the phonebook', 500, array(
+                'X-Phonebook-Debug' => $e->getMessage()
+            ));
+        }
     }
 
     public function getRootDir()

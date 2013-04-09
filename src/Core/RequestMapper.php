@@ -8,6 +8,7 @@ use Controller\RestInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Map requests to controllers
@@ -27,6 +28,23 @@ class RequestMapper
         $this->router = $router;
     }
 
+    public function handle(Request $request)
+    {
+        $route = $this->router->match($request->getPathInfo());
+
+        // add the attributes to the request object
+        foreach ($route as $key => $value) {
+            $request->attributes->set($key, $value);
+        }
+
+        if (isset($route['redirect'])) {
+            return new RedirectResponse($route['redirect']);
+        }
+
+        // By default we handle a controller
+        return $this->handleController($request, $route);
+    }
+
     /**
      * Maps a request to a controller method,
      * or a rest method on a Controller implementing RestInterface
@@ -37,16 +55,9 @@ class RequestMapper
      *
      * @throws DomainException If an instance of Response is not returned
      */
-    public function handle(Request $request)
+    public function handleController(Request $request, $route)
     {
-        $route = $this->router->match($request->getPathInfo());
-
         $controller = $this->getController($route['service']);
-
-        // add the attributes to the request object
-        foreach ($route as $key => $value) {
-            $request->attributes->set($key, $value);
-        }
 
         // return reflection method
         $response = $this->invokeMethod($controller, $route, $request);
@@ -74,7 +85,7 @@ class RequestMapper
      */
     protected function invokeMethod($controller, $route, $request)
     {
-        $possibleValuesToPass = array_merge($route);
+        $possibleValuesToPass = array_merge($route, array('request' => $request));
 
         $r = new \ReflectionClass($controller);
 
