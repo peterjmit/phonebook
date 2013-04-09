@@ -29,7 +29,7 @@ class ContactController extends ContainerAware implements RestInterface
         $response = new JsonResponse();
 
         $data = json_decode($request->getContent(), true);
-        $this->getContactValidator()->validate($data);
+        $data = $this->getContactValidator()->validate($data);
 
         try {
             $data = $contactManager->create($data);
@@ -53,7 +53,7 @@ class ContactController extends ContainerAware implements RestInterface
         $contact = $contactManager->find($id);
 
         $data = json_decode($request->getContent(), true);
-        $this->getContactValidator()->validate($data);
+        $data = $this->getContactValidator()->validate($data);
 
         $contactManager->update($data, $contact);
 
