@@ -26,6 +26,8 @@ class ContactController extends ContainerAware implements RestInterface
             $response->setStatusCode(404, sprintf('Contact "%s" not found', $id));
         }
 
+        $response->setData($contacts);
+
         return $response;
     }
 
