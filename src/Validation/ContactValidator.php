@@ -8,9 +8,9 @@ class ContactValidator
     {
         $data = $this->sanitize($data);
 
-        $this->assertExistsInArray('first_name', $data); // required
-        $this->assertExistsInArray('last_name', $data); // required
-        $this->assertExistsInArray('numbers', $data); // required
+        $this->assertExistsInArray('first_name', $data);
+        $this->assertExistsInArray('last_name', $data);
+        $this->assertExistsInArray('numbers', $data);
 
         foreach ($data['numbers'] as $number) {
             $this->assertExistsInArray('number', $number);
@@ -60,6 +60,6 @@ class ContactValidator
             return;
         }
 
-        throw new \InvalidArgumentException(sprintf('Expected %s to not be empty', $key));
+        throw new ValidationException(sprintf('Expected %s to not be empty', $key));
     }
 }

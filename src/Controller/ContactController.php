@@ -4,6 +4,8 @@ namespace Controller;
 
 use Core\Container\ContainerAware;
 
+use Validation\ValidationException;
+
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactController extends ContainerAware implements RestInterface
@@ -12,6 +14,7 @@ class ContactController extends ContainerAware implements RestInterface
     {
         $request = $this->getRequest();
         $contactManager = $this->getContactManager();
+        $response = new JsonResponse();
 
         $id = $request->attributes->get('id', null);
 
@@ -19,7 +22,11 @@ class ContactController extends ContainerAware implements RestInterface
             $contactManager->all() :
             $contactManager->find($id);
 
-        return new JsonResponse($contacts);
+        if (!$contacts) {
+            $response->setStatusCode(404, sprintf('Contact "%s" not found', $id));
+        }
+
+        return $response;
     }
 
     public function create()
@@ -29,17 +36,15 @@ class ContactController extends ContainerAware implements RestInterface
         $response = new JsonResponse();
 
         $data = json_decode($request->getContent(), true);
-        $data = $this->getContactValidator()->validate($data);
 
         try {
-            $data = $contactManager->create($data);
-            $response->setData($data);
+            $data = $this->getContactValidator()->validate($data);
+            $contact = $contactManager->create($data);
+            $response->setData($contact);
+        } catch (ValidationException $e) {
+            $response->setStatusCode(400, $e->getMessage());
         } catch (\Exception $e) {
-            $response->setStatusCode(500);
-            $response->setData(array(
-                'success' => false,
-                'error' => $e->getMessage()
-            ));
+            $response->setStatusCode(500, 'Sorry, there appears to be a problem with saving your contact');
         }
 
         return $response;
@@ -49,15 +54,29 @@ class ContactController extends ContainerAware implements RestInterface
     {
         $request = $this->getRequest();
         $contactManager = $this->getContactManager();
+        $response = new JsonResponse();
+
         $id = $request->attributes->get('id', null);
+
         $contact = $contactManager->find($id);
 
+        if (!$contact) {
+            $response->setStatusCode(404, sprintf('Contact "%s" not found', $id));
+        }
+
         $data = json_decode($request->getContent(), true);
-        $data = $this->getContactValidator()->validate($data);
 
-        $contactManager->update($data, $contact);
+        try {
+            $data = $this->getContactValidator()->validate($data);
+            $contact = $contactManager->update($data, $contact);
+            $response->setData($contact);
+        } catch (ValidationException $e) {
+            $response->setStatusCode(400, $e->getMessage());
+        } catch (\Exception $e) {
+            $response->setStatusCode(500, 'Sorry, there appears to be a problem with updating your contact');
+        }
 
-        return new JsonResponse($contact);
+        return $response;
     }
 
     public function delete()
@@ -71,17 +90,13 @@ class ContactController extends ContainerAware implements RestInterface
         $contact = $contactManager->find($id);
 
         if (!$contact) {
-            $response->setStatusCode(500);
+            $response->setStatusCode(404, sprintf('Contact "%s" not found', $id));
         }
 
         try {
             $contactManager->delete($id);
         } catch (\Exception $e) {
-            $response->setStatusCode(500);
-            $response->setData(array(
-                'success' => false,
-                'error' => $e->getMessage()
-            ));
+            $response->setStatusCode(500, sprintf('Could not delete contact "%s"', $id));
         }
 
         return $response;
