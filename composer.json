@@ -6,7 +6,7 @@
         "pimple/pimple": "1.0.*@dev"
     },
     "require-dev": {
-        "phpspec/phpspec2": "*"
+        "phpspec/phpspec2": "1.0.*@dev"
     },
     "license": "MIT",
     "authors": [
