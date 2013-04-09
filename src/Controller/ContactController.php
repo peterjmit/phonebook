@@ -20,7 +20,7 @@ class ContactController extends ContainerAware implements RestInterface
             $contactManager->all() :
             $contactManager->find($id);
 
-        if (!$contacts) {
+        if ($contacts === null) {
             $response->setStatusCode(404, sprintf('Contact "%s" not found', $id));
         }
 
