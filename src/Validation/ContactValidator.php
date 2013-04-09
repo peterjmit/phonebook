@@ -6,17 +6,16 @@ class ContactValidator
 {
     public function validate($data)
     {
-        $data = $this->sanitize($data);
-
         $this->assertExistsInArray('first_name', $data);
         $this->assertExistsInArray('last_name', $data);
         $this->assertExistsInArray('numbers', $data);
 
         foreach ($data['numbers'] as $number) {
             $this->assertExistsInArray('number', $number);
+            $this->assertTelephone($number['number']);
         }
 
-        return $data;
+        return $this->sanitize($data);
     }
 
     public function sanitize($unsafeData)
@@ -27,6 +26,9 @@ class ContactValidator
             $data['id'] = $this->sanitizeInt($unsafeData['id']);
         }
 
+        // Dont really need to do anything with these,
+        // output is escaped on the front end and double escaping
+        // leads to issues
         $data['first_name'] = $unsafeData['first_name'];
         $data['last_name'] = $unsafeData['last_name'];
 
@@ -46,12 +48,16 @@ class ContactValidator
 
     private function sanitizeInt($variable)
     {
-        return filter_var($variable, FILTER_SANITIZE_NUMBER_INT);
+        return filter_var(str_replace(' ', '', $variable), FILTER_SANITIZE_NUMBER_INT);
     }
 
-    private function sanitizeString($string)
+    private function assertTelephone($string)
     {
-        return filter_var($string, FILTER_SANITIZE_SPECIAL_CHARS);
+        if (preg_match('/\d[+-]\d/', $string) === 1) {
+            return;
+        }
+
+        throw new ValidationException(sprintf('%s is not a valid number', $string));
     }
 
     private function assertExistsInArray($key, $array)

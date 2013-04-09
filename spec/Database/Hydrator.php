@@ -54,13 +54,13 @@ class Hydrator extends ObjectBehavior
                 )
             ), $stmt)
             ->shouldReturn(array(
-                1 => array(
+                array(
                     'id' => 1,
                     'first_name' => 'John',
                     'last_name' => 'Smith',
                     'numbers' => array(
-                        1 => array('id' => 1, 'number' => '123', 'sort' => 0),
-                        2 => array('id' => 2, 'number' => '456', 'sort' => 1),
+                        array('id' => 1, 'number' => '123', 'sort' => 0),
+                        array('id' => 2, 'number' => '456', 'sort' => 1),
                     )
                 )
             ));
