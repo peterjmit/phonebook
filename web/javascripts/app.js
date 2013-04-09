@@ -43,7 +43,7 @@ Phonebook.Contact = Backbone.Model.extend({
 
 Phonebook.Contacts = Backbone.Collection.extend({
     model: Phonebook.Contact,
-    url: 'http://local.phonebook.com/contacts',
+    url: '/contacts',
 
     comparator: function(contact) {
         return contact.get('last_name');
